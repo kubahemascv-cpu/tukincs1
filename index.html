@@ -66,7 +66,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--txt);min-height:10
 .sec-label:first-child{margin-top:0}
 
 /* KPI GRID */
-.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:4px}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:4px}
 @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:580px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
 .kpi-card{background:var(--card);border-radius:var(--r);padding:15px 14px;box-shadow:var(--shd);border:1px solid var(--bdr);position:relative;overflow:hidden}
@@ -124,6 +124,41 @@ body.dark .status-false{background:#2A0808;border-color:#7F1D1D}
 .section-hd{font-size:12px;font-weight:700;color:var(--txt);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
 .count-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:var(--bg2);color:var(--mut);font-weight:600}
 
+
+/* SECTION NOTE DIAGNOSA */
+.sec-note{border-radius:10px;padding:10px 14px;font-size:11.5px;line-height:1.65;margin:10px 0 20px;display:flex;gap:9px;align-items:flex-start;border:1px solid}
+.sec-note-ico{font-size:15px;flex-shrink:0;margin-top:1px}
+.sec-note.ok{background:#F0FDF4;border-color:#BBF7D0;color:#15803D}
+.sec-note.warn{background:#FFFBEB;border-color:#FDE68A;color:#92400E}
+.sec-note.bad{background:#FEF2F2;border-color:#FECACA;color:#DC2626}
+.sec-note.info{background:#EFF6FF;border-color:#BFDBFE;color:#1D4ED8}
+body.dark .sec-note.ok{background:#0D2818;border-color:#14532D;color:#4ADE80}
+body.dark .sec-note.warn{background:#292200;border-color:#7C5800;color:#FCD34D}
+body.dark .sec-note.bad{background:#2A0808;border-color:#7F1D1D;color:#F87171}
+body.dark .sec-note.info{background:#0A1628;border-color:#1D3A6E;color:#93C5FD}
+
+/* JASA KPI GRID */
+.jasa-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:4px}
+@media(max-width:900px){.jasa-grid{grid-template-columns:repeat(2,1fr)}}
+
+/* MARKETING PANEL */
+.mktg-panel{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--shd);border:1px solid var(--bdr);margin-bottom:4px}
+.mktg-title{font-size:12px;font-weight:700;color:var(--txt);margin-bottom:12px}
+.mktg-input-row{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:12px}
+@media(max-width:580px){.mktg-input-row{grid-template-columns:1fr 1fr}}
+.mktg-result{display:flex;gap:10px;flex-wrap:wrap}
+.mktg-metric{background:var(--bg2);border-radius:9px;padding:8px 13px;font-size:11.5px;color:var(--txt2)}
+.mktg-metric strong{display:block;font-size:15px;font-weight:800;color:var(--txt);margin-top:2px}
+.flbl2{font-size:10px;font-weight:600;color:var(--mut);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+.finp2{width:100%;height:34px;padding:0 10px;border:1.5px solid var(--bdr);border-radius:8px;font-family:var(--font);font-size:12px;font-weight:500;color:var(--txt);background:var(--card2);outline:none;transition:border-color .15s}
+.finp2:focus{border-color:var(--or)}
+.btn-save2{height:34px;padding:0 16px;background:var(--or);color:#fff;font-family:var(--font);font-size:12px;font-weight:700;border:none;border-radius:8px;cursor:pointer;white-space:nowrap}
+.btn-save2:hover{background:var(--or-d)}
+/* OMZET CHART BOX */
+.chart-box-full{background:var(--card);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shd);border:1px solid var(--bdr);margin-bottom:4px}
+.chart-hd-full{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.chart-title-full{font-size:12px;font-weight:700;color:var(--txt)}
+
 /* GROWTH ARROW */
 .growth-up{color:var(--grn)}
 .growth-dn{color:var(--red)}
@@ -174,8 +209,41 @@ body.dark .status-false{background:#2A0808;border-color:#7F1D1D}
   <div id="error-display" style="display:none"></div>
   <div id="dashboard" style="display:none">
 
-    <span class="sec-label">Ringkasan Performa</span>
+
+    <span class="sec-label">🏗️ Performa Jasa — Target vs Realisasi</span>
+    <div class="jasa-grid" id="jasa-grid">
+      <div class="kpi-card"><span class="kpi-lbl">Memuat...</span><span class="kpi-val">—</span></div>
+      <div class="kpi-card"><span class="kpi-lbl">Memuat...</span><span class="kpi-val">—</span></div>
+      <div class="kpi-card"><span class="kpi-lbl">Memuat...</span><span class="kpi-val">—</span></div>
+      <div class="kpi-card"><span class="kpi-lbl">Memuat...</span><span class="kpi-val">—</span></div>
+    </div>
+    <div id="note-jasa"></div>
+
+    <span class="sec-label">📈 Grafik Pertumbuhan Omzet Jasa</span>
+    <div class="chart-box-full" id="omzet-chart-box">
+      <div class="chart-hd-full">
+        <div class="chart-title-full">Target vs Realisasi Omzet per Bulan</div>
+        <span class="chart-badge" id="omzet-chart-badge">—</span>
+      </div>
+      <canvas id="chart-omzet" style="max-height:280px"></canvas>
+    </div>
+
+    <span class="sec-label">💰 Biaya Marketing &amp; ROAS</span>
+    <div class="mktg-panel">
+      <div class="mktg-title">✏️ Input Biaya Iklan Manual <span style="font-size:10px;color:var(--mut);font-weight:400">(override data sheet — tersimpan per bulan)</span></div>
+      <div class="mktg-input-row">
+        <div><label class="flbl2">Biaya Iklan Bulan Ini (Rp)</label><input class="finp2" type="text" inputmode="numeric" id="inp-adspend" placeholder="0"></div>
+        <div><label class="flbl2">Target Omzet Custom (Rp)</label><input class="finp2" type="text" inputmode="numeric" id="inp-target" placeholder="Otomatis dari sheet"></div>
+        <button class="btn-save2" onclick="saveMktgInput()">💾 Simpan</button>
+      </div>
+      <div class="mktg-result" id="mktg-result"></div>
+    </div>
+    <div id="note-mktg"></div>
+
+    <span class="sec-label">Ringkasan Performa CS</span>
+
     <div class="kpi-grid" id="kpi-grid"></div>
+    <div id="note-survey"></div>
 
     <span class="sec-label">Tren &amp; Kategori</span>
     <div class="chart-grid">
@@ -188,6 +256,7 @@ body.dark .status-false{background:#2A0808;border-color:#7F1D1D}
         <canvas id="cat-chart"></canvas>
       </div>
     </div>
+    <div id="note-tren"></div>
 
     <span class="sec-label">Breakdown Kategori</span>
     <div class="section-card">
@@ -559,8 +628,6 @@ function renderKPI(filtered, all) {
       sub: topCat && total > 0 ? fmtNum(topCat[1])+' survey ('+Math.round(topCat[1]/total*100)+'%)' : '', accent:false },
     { ico:'&#128200;', lbl:'Rata-rata Survey / Bulan', val: fmtNum(avgPerMonth),
       sub: trendFiltered.data.length + ' bulan data', accent:false },
-    { ico:'&#128100;', lbl:'Total Baris Data', val: fmtNum(all.length),
-      sub: filtered.length < all.length ? fmtNum(filtered.length)+' setelah filter' : 'Semua data', accent:false },
   ].map(k =>
     '<div class="kpi-card'+(k.accent?' accent':'')+'"><span class="kpi-ico">'+k.ico+'</span>'
     +'<span class="kpi-lbl">'+k.lbl+'</span><span class="kpi-val">'+k.val+'</span>'
@@ -759,6 +826,8 @@ function renderAll() {
   renderCharts(filtered, RAW_ROWS);
   renderCatList(filtered);
   renderTable(filtered);
+  renderJasaSection();
+  renderSectionNotes(filtered, RAW_ROWS);
 }
 
 // ── MAIN LOAD ─────────────────────────────────────────
@@ -818,6 +887,378 @@ function onDataReady(hdrs, rows, method) {
   document.getElementById('dashboard').style.display = '';
   document.getElementById('refresh-btn').classList.remove('spin');
   renderAll();
+  loadJasaData();
+}
+
+
+// ── JASA DATA SOURCE ──────────────────────────────────
+const JASA_SHEET_ID      = '1gY81GJUFhurnA6QisurFLvRzusPzc06KY9b6Gv3V4L4';
+const JASA_SHEET         = 'DATA SUMBER';
+// Target: C21:Q32 → col C (idx 0)=nilai target, col Q (idx 14)=nama bulan
+const JASA_RANGE_TARGET  = 'C21:Q32';
+// Capaian: A36:C47 → col A (idx 0)=nama bulan, col C (idx 2)=nilai capaian
+const JASA_RANGE_CAPAIAN = 'A36:C47';
+const MONTHS_ID     = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+let JASA_DATA = []; // parsed monthly Jasa data
+
+function gvizRange(sheetId, sheetName, range) {
+  return new Promise(function(resolve, reject) {
+    var cb = '_gvr_' + Date.now() + '_' + Math.floor(Math.random()*9999);
+    var sc = document.createElement('script'), done = false;
+    var t = setTimeout(function(){if(done)return;done=true;cleanup();reject(new Error('Timeout'));},12000);
+    window[cb] = function(d){
+      if(done)return;done=true;cleanup();
+      if(d.status==='error'){reject(new Error('Sheet error'));return;}
+      if(!d.table){reject(new Error('No table'));return;}
+      resolve(d.table);
+    };
+    sc.onerror = function(){if(done)return;done=true;cleanup();reject(new Error('Load error'));};
+    function cleanup(){clearTimeout(t);try{delete window[cb];}catch(e){window[cb]=undefined;}if(sc.parentNode)sc.parentNode.removeChild(sc);}
+    sc.src='https://docs.google.com/spreadsheets/d/'+sheetId+'/gviz/tq?tqx=out:json;responseHandler:'+cb
+      +'&sheet='+encodeURIComponent(sheetName)+'&range='+encodeURIComponent(range)+'&headers=0&cb='+Date.now();
+    document.head.appendChild(sc);
+  });
+}
+
+function parseNumStr(s){
+  if(typeof s==='number')return s;
+  var clean=String(s||'').replace(/[^0-9,.-]/g,'').replace(/\./g,'').replace(',','.');
+  return parseFloat(clean)||0;
+}
+
+function parseJasaData(targetTable, capaianTable) {
+  var targets={}, capaian={};
+
+  // C21:Q32 → col C (idx 0) = nilai target, col Q (idx 14) = nama bulan
+  if(targetTable&&targetTable.rows){
+    targetTable.rows.forEach(function(row){
+      var c=row.c||[];
+      var nilai  = parseNumStr(c[0]?c[0].v:0);    // Col C = nilai target
+      var bulan  = c[14]?String(c[14].v||'').trim():''; // Col Q = nama bulan
+      if(bulan&&MONTHS_ID.indexOf(bulan)>=0) targets[bulan]=nilai;
+    });
+  }
+
+  // A36:C47 → col A (idx 0) = nama bulan, col C (idx 2) = nilai capaian
+  if(capaianTable&&capaianTable.rows){
+    capaianTable.rows.forEach(function(row){
+      var c=row.c||[];
+      var bulan = c[0]?String(c[0].v||'').trim():''; // Col A = nama bulan
+      var nilai = parseNumStr(c[2]?c[2].v:0);        // Col C = nilai capaian
+      if(bulan&&MONTHS_ID.indexOf(bulan)>=0) capaian[bulan]=nilai;
+    });
+  }
+
+  // Gabungkan ke array bulanan sesuai urutan Jan-Des
+  var year=new Date().getFullYear();
+  return MONTHS_ID.map(function(month,i){
+    return{
+      month:month,
+      ym:year+'-'+String(i+1).padStart(2,'0'),
+      target:targets[month]||0,
+      revenue:capaian[month]||0,
+      actual_spend:0,
+      profit:0
+    };
+  }).filter(function(d){return d.target>0||d.revenue>0;});
+}
+
+function loadJasaData(){
+  Promise.all([
+    gvizRange(JASA_SHEET_ID, JASA_SHEET, JASA_RANGE_TARGET),
+    gvizRange(JASA_SHEET_ID, JASA_SHEET, JASA_RANGE_CAPAIAN)
+  ]).then(function(tables){
+    var t0=tables[0],t1=tables[1];
+    var r0=t0&&t0.rows?t0.rows.length:0;
+    var r1=t1&&t1.rows?t1.rows.length:0;
+    var v0=r0>0&&t0.rows[0].c&&t0.rows[0].c[0]?JSON.stringify(t0.rows[0].c[0].v):'(null)';
+    var v1=r1>0&&t1.rows[0].c&&t1.rows[0].c[0]?JSON.stringify(t1.rows[0].c[0].v):'(null)';
+    JASA_DATA=parseJasaData(t0,t1);
+    renderJasaSection();
+    renderSectionNotes(applyFilters(RAW_ROWS),RAW_ROWS);
+  }).catch(function(err){
+    if(dbg)dbg.innerHTML='<b style="color:red">❌ Fetch GAGAL: '+String(err)+'</b>';
+    JASA_DATA=[];
+    renderJasaSection();
+  });
+}
+
+// ── MARKETING INPUT ───────────────────────────────────
+function nowYM(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+
+// Ambil bulan yang dipilih dari filter — fallback ke bulan sekarang
+function getSelectedMonth(){
+  var el=document.getElementById('filter-month');
+  return (el&&el.value)?el.value:nowYM();
+}
+function getMktgInput(ym){ try{return JSON.parse(localStorage.getItem('cs_mktg_'+ym)||'{}');}catch(e){return{};} }
+function setMktgInput(ym,obj){ localStorage.setItem('cs_mktg_'+ym,JSON.stringify(obj)); }
+function fmtRP(n){ return 'Rp '+Math.round(n||0).toLocaleString('id-ID'); }
+function fmtSh(n){ n=Math.round(n||0); if(n>=1e9)return'Rp '+(n/1e9).toFixed(1)+'M'; if(n>=1e6)return'Rp '+(n/1e6).toFixed(1)+' jt'; if(n>=1e3)return'Rp '+(n/1e3).toFixed(0)+' rb'; return'Rp '+n; }
+function pctN(a,b){ return b>0?+(a/b*100).toFixed(1):0; }
+
+function saveMktgInput(){
+  var parseI=function(id){return +document.getElementById(id).value.replace(/\./g,'').replace(/[^0-9]/g,'')||0;};
+  var ym=getSelectedMonth();
+  setMktgInput(ym,{adspend:parseI('inp-adspend'),target_custom:parseI('inp-target')});
+  renderJasaSection();
+  renderSectionNotes(applyFilters(RAW_ROWS),RAW_ROWS);
+}
+
+function loadMktgUI(){
+  var ym=getSelectedMonth();
+  var inp=getMktgInput(ym);
+  var fI=function(n){return n>0?Math.round(n).toLocaleString('id-ID'):'';};
+  var as=document.getElementById('inp-adspend'),tg=document.getElementById('inp-target');
+  if(as)as.value=fI(inp.adspend);
+  if(tg)tg.value=fI(inp.target_custom);
+}
+
+// ── OMZET GROWTH CHART ────────────────────────────────
+function renderOmzetChart(){
+  var isDark=document.body.classList.contains('dark');
+  var grid=isDark?'rgba(255,255,255,.06)':'rgba(0,0,0,.05)';
+  var tc=isDark?'#9CA3AF':'#7A7E8A';
+
+  // Ambil semua data JASA (tidak filter bulan — tampilkan semua bulan yang ada)
+  var data=JASA_DATA.filter(function(d){return d.target>0||d.revenue>0;});
+  var labels=data.map(function(d){return d.month.slice(0,3);});
+  var targets=data.map(function(d){return d.target;});
+  var revenues=data.map(function(d){return d.revenue;});
+
+  // Hitung % pencapaian per bulan
+  var achievements=data.map(function(d){
+    return d.target>0?+(d.revenue/d.target*100).toFixed(1):0;
+  });
+
+  // Badge: berapa bulan yang melampaui target
+  var metTarget=revenues.filter(function(r,i){return r>0&&r>=targets[i];}).length;
+  var hasRev=revenues.filter(function(r){return r>0;}).length;
+  var badge=document.getElementById('omzet-chart-badge');
+  if(badge) badge.textContent=data.length+' bulan data'+(hasRev?' · '+metTarget+'/'+hasRev+' capai target':'');
+
+  // Destroy existing chart
+  var el=document.getElementById('chart-omzet');
+  if(!el)return;
+  var existing=Chart.getChart(el);if(existing)existing.destroy();
+
+  if(!data.length){
+    el.parentElement.innerHTML+='<div style="text-align:center;padding:20px;color:var(--mut);font-size:12px">📊 Belum ada data omzet untuk ditampilkan.</div>';
+    return;
+  }
+
+  new Chart(el.getContext('2d'),{
+    type:'bar',
+    data:{
+      labels:labels,
+      datasets:[
+        {
+          label:'Target Omzet',
+          data:targets,
+          backgroundColor:'rgba(245,197,24,.25)',
+          borderColor:'rgba(200,155,0,.8)',
+          borderWidth:2,borderRadius:4,order:2,
+        },
+        {
+          label:'Realisasi',
+          data:revenues,
+          backgroundColor:revenues.map(function(r,i){
+            if(r===0)return'rgba(200,200,200,.3)';
+            return r>=targets[i]?'rgba(22,163,74,.75)':'rgba(245,197,24,.75)';
+          }),
+          borderColor:revenues.map(function(r,i){
+            if(r===0)return'rgba(200,200,200,.5)';
+            return r>=targets[i]?'#16A34A':'#C89B00';
+          }),
+          borderWidth:1.5,borderRadius:4,order:3,
+        },
+        {
+          type:'line',
+          label:'% Pencapaian',
+          data:achievements,
+          borderColor:'rgba(220,38,38,.75)',
+          backgroundColor:'rgba(220,38,38,.08)',
+          borderWidth:2,pointRadius:4,pointBackgroundColor:'#DC2626',
+          fill:false,tension:.3,order:1,yAxisID:'y2',
+        }
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      plugins:{
+        datalabels:{display:false},
+        legend:{position:'bottom',labels:{font:{size:10},boxWidth:14,padding:10,color:tc}},
+        tooltip:{callbacks:{
+          label:function(c){
+            if(c.dataset.yAxisID==='y2')return' Pencapaian: '+c.parsed.y+'%';
+            return' '+c.dataset.label+': '+fmtRP(c.parsed.y);
+          }
+        }}
+      },
+      scales:{
+        x:{grid:{color:grid},ticks:{color:tc,font:{size:9}}},
+        y:{grid:{color:grid},ticks:{color:tc,font:{size:9},callback:function(v){return fmtSh(v);}},beginAtZero:true,position:'left'},
+        y2:{grid:{display:false},ticks:{color:'rgba(220,38,38,.7)',font:{size:9},callback:function(v){return v+'%';}},beginAtZero:true,position:'right',max:150},
+      }
+    }
+  });
+}
+
+// ── RENDER JASA SECTION ───────────────────────────────
+function renderJasaSection(){
+  var ym = getSelectedMonth();
+  var inp = getMktgInput(ym);
+  // Find current month data
+  var cur = JASA_DATA.find(function(d){return d.ym===ym;});
+  // YTD totals
+  var ytdTarget  = JASA_DATA.reduce(function(s,d){return s+d.target;},0);
+  var ytdRevenue = JASA_DATA.reduce(function(s,d){return s+d.revenue;},0);
+  var ytdSpend   = JASA_DATA.reduce(function(s,d){return s+d.actual_spend;},0);
+
+  var target   = (inp.target_custom>0?inp.target_custom:(cur?cur.target:0))||ytdTarget;
+  var revenue  = cur?cur.revenue:ytdRevenue;
+  var spend    = (inp.adspend>0?inp.adspend:(cur?cur.actual_spend:0))||ytdSpend;
+  var gap      = target-revenue;
+  var ach      = pctN(revenue,target);
+  var roas     = spend>0&&revenue>0?+(revenue/spend).toFixed(1):0;
+  var cpl      = 0; // no leads data in this file
+
+  var acls = ach>=100?'#16A34A':ach>=80?'#D97706':'#DC2626';
+  var ym    = getSelectedMonth();
+  var ymParts = ym.split('-');
+  var ymLabel = MONTHS_ID[+ymParts[1]-1]+' '+ymParts[0];
+  var label = cur ? ymLabel : 'YTD '+new Date().getFullYear();
+
+  // Jasa KPI cards
+  var grid=document.getElementById('jasa-grid');
+  if(grid){
+    if(!JASA_DATA.length&&!inp.target_custom){
+      grid.innerHTML='<div style="grid-column:1/-1;background:var(--bg2);border-radius:10px;padding:14px;font-size:11.5px;color:var(--mut);line-height:1.8">'
+        +'⚠️ Data tidak ditemukan di sheet <strong>'+JASA_SHEET+'</strong><br>'
+        +'Range target: <code>'+JASA_RANGE_TARGET+'</code> | Range capaian: <code>'+JASA_RANGE_CAPAIAN+'</code><br>'
+        +'Pastikan kedua range tersebut sudah berisi angka (bukan teks/kosong) di sheet DATA SUMBER.<br>'
+        +'Atau isi <strong>Target Omzet Custom</strong> di panel Biaya Marketing di atas untuk override manual.'
+        +'</div>';
+      return;
+    }
+    grid.innerHTML=[
+      {ico:'🎯',lbl:'Target Omzet Jasa',val:fmtSh(target),sub:label+' · Data Sumber Sheet',color:''},
+      {ico:'💰',lbl:'Realisasi Revenue',val:fmtSh(revenue),sub:'Finance-confirmed',color:''},
+      {ico:'📊',lbl:'Pencapaian',val:ach+'%',sub:'Revenue / Target × 100',color:acls},
+      {ico:'📉',lbl:'GAP Omzet',val:fmtSh(Math.abs(gap)),sub:gap<=0?'✅ Melampaui target':'Kekurangan dari target',color:gap<=0?'#16A34A':'#DC2626'},
+    ].map(function(k){
+      return'<div class="kpi-card"><span class="kpi-ico">'+k.ico+'</span>'
+        +'<span class="kpi-lbl">'+k.lbl+'</span>'
+        +'<span class="kpi-val" style="'+(k.color?'color:'+k.color:'')+'">'+k.val+'</span>'
+        +'<span class="kpi-sub">'+k.sub+'</span></div>';
+    }).join('');
+  }
+
+  // Marketing ROAS panel
+  var mktg=document.getElementById('mktg-result');
+  if(mktg){
+    if(!spend&&!revenue){
+      mktg.innerHTML='<div style="font-size:11px;color:var(--mut)">Masukkan biaya iklan untuk menghitung ROAS dan efisiensi marketing.</div>';
+    } else {
+      mktg.innerHTML=[
+        {lbl:'Biaya Iklan',val:spend?fmtRP(spend):'—'},
+        {lbl:'ROAS',val:roas?roas+'x':'—'},
+        {lbl:'Revenue / Spend',val:roas?roas+'x':'—'},
+        {lbl:'Profit (Finance)',val:cur&&cur.profit?fmtSh(cur.profit):'—'},
+      ].map(function(m){return'<div class="mktg-metric"><span>'+m.lbl+'</span><strong style="color:'+(m.lbl==='ROAS'?(roas>=8?'var(--grn)':roas>=5?'#D97706':'var(--red)'):'var(--txt)')+'">'+m.val+'</strong></div>';}).join('');
+    }
+  }
+
+  loadMktgUI();
+  renderOmzetChart();
+}
+
+// ── SECTION NOTES / DIAGNOSA ──────────────────────────
+function secNote(type,ico,msg){
+  return'<div class="sec-note '+type+'"><span class="sec-note-ico">'+ico+'</span><span>'+msg+'</span></div>';
+}
+
+function renderSectionNotes(filtered, all){
+  var ym = getSelectedMonth();
+  var inp = getMktgInput(ym);
+  var cur = JASA_DATA.find(function(d){return d.ym===ym;});
+  var target  = (inp.target_custom>0?inp.target_custom:(cur?cur.target:0));
+  var revenue = cur?cur.revenue:0;
+  var spend   = (inp.adspend>0?inp.adspend:(cur?cur.actual_spend:0));
+  var ach     = pctN(revenue,target);
+  var roas    = spend>0&&revenue>0?+(revenue/spend).toFixed(1):0;
+
+  // Monthly trend dari CS survey data
+  var trend = monthlyTrend(filtered.length?filtered:all);
+  var tLen  = trend.data.length;
+  var last  = tLen>0?trend.data[tLen-1]:0;
+  var prev  = tLen>1?trend.data[tLen-2]:0;
+  var growPct = prev>0?Math.round((last-prev)/prev*100):0;
+
+  // ── 1. Ringkasan Performa CS ─────────────────────────
+  var n1='';
+  if(!filtered.length){
+    n1=secNote('info','📊','Belum ada data survey untuk filter yang dipilih.');
+  } else if(tLen>=2&&growPct>10){
+    n1=secNote('ok','📈','Tren survey bulan terakhir naik +'+growPct+'% ('+last+' vs '+prev+' survey). Volume leads CS meningkat — pastikan kapasitas follow-up memadai.');
+  } else if(tLen>=2&&growPct<-10){
+    n1=secNote('bad','📉','Tren survey bulan terakhir turun '+growPct+'% ('+last+' vs '+prev+' survey). Volume leads menurun — cek apakah ada penurunan traffic atau iklan yang tidak berjalan.');
+  } else if(filtered.length>0){
+    n1=secNote('info','📋',filtered.length+' survey dalam filter aktif. '+tLen+' bulan data tersedia.'+(tLen>=2?' Pertumbuhan MoM: '+(growPct>0?'+':'')+growPct+'%':''));
+  }
+
+  // ── 2. Jasa Target vs Realisasi ─────────────────────
+  var n2='';
+  if(!cur){
+    n2=secNote('info','📊','Data Divisi Jasa bulan ini belum tersedia di sheet DATA SUMBER.');
+  } else if(!revenue){
+    n2=secNote('info','⏳','Revenue Finance bulan ini belum diisi di DATA SUMBER. Target: '+fmtSh(target)+'. Update spreadsheet setelah realisasi dikonfirmasi Finance.');
+  } else if(ach>=100){
+    n2=secNote('ok','🏆','Target bulan ini terlampaui ('+ach+'%). Revenue '+fmtSh(revenue)+' melebihi target '+fmtSh(target)+' sebesar +'+fmtSh(revenue-target)+'.');
+  } else if(ach>=80){
+    n2=secNote('ok','🎯','Pencapaian '+ach+'% — on track. Sisa GAP '+fmtSh(target-revenue)+' masih dalam jangkauan.');
+  } else if(ach>=60){
+    n2=secNote('warn','⚠️','Pencapaian baru '+ach+'%. GAP '+fmtSh(target-revenue)+' cukup besar — evaluasi pipeline proyek yang sedang berjalan.');
+  } else if(ach>0){
+    n2=secNote('bad','🔴','Pencapaian kritis: '+ach+'%. GAP '+fmtSh(target-revenue)+' sangat jauh dari target '+fmtSh(target)+'.');
+  }
+
+  // ── 3. Marketing ROAS ────────────────────────────────
+  var n3='';
+  if(!spend){
+    n3=secNote('info','💡','Biaya iklan belum diisi. Masukkan di panel di atas untuk menghitung ROAS dan efisiensi marketing Divisi Jasa.');
+  } else if(!revenue){
+    n3=secNote('info','📊','Biaya iklan: '+fmtRP(spend)+'. Revenue Finance belum dikonfirmasi — ROAS akan tampil setelah revenue diisi di DATA SUMBER.');
+  } else if(roas>=8){
+    n3=secNote('ok','🚀','ROAS '+roas+'x — iklan sangat efisien. Setiap Rp 1 biaya iklan menghasilkan Rp '+roas+' revenue. Pertahankan struktur campaign yang ada.');
+  } else if(roas>=5){
+    n3=secNote('warn','📊','ROAS '+roas+'x — di atas minimum 5x tapi belum optimal. Identifikasi campaign dengan CPL tertinggi dan optimalkan audience targeting.');
+  } else {
+    n3=secNote('bad','📉','ROAS hanya '+roas+'x — di bawah standar minimum 5x. Spend '+fmtRP(spend)+' untuk revenue '+fmtSh(revenue)+'. Audit creative dan audience iklan segera.');
+  }
+
+  // ── 4. Tren & Kategori ───────────────────────────────
+  var cats   = countByCategory(filtered);
+  var nCats  = Object.keys(cats).length;
+  var top    = Object.entries(cats).sort(function(a,b){return b[1]-a[1];})[0];
+  var topPct = top&&filtered.length?Math.round(top[1]/filtered.length*100):0;
+  var n4='';
+  if(!nCats){
+    n4=secNote('info','📊','Belum ada data kategori untuk filter ini.');
+  } else if(topPct>=60){
+    n4=secNote('warn','⚠️','Kategori "'+top[0]+'" mendominasi '+topPct+'% dari seluruh survey ('+top[1]+' dari '+filtered.length+'). Ketergantungan tinggi pada satu kategori — diversifikasi sumber leads disarankan.');
+  } else if(nCats>=4&&topPct<=35){
+    n4=secNote('ok','✅','Distribusi kategori sehat: '+nCats+' kategori aktif, kategori terbesar "'+top[0]+'" hanya '+topPct+'%. Sumber leads tersebar dengan baik.');
+  } else {
+    n4=secNote('info','📋',nCats+' kategori aktif. Terbesar: "'+top[0]+'" ('+topPct+'% dari '+filtered.length+' survey).');
+  }
+
+  var el;
+  el=document.getElementById('note-survey');  if(el)el.innerHTML=n1;
+  el=document.getElementById('note-jasa');    if(el)el.innerHTML=n2;
+  el=document.getElementById('note-mktg');    if(el)el.innerHTML=n3;
+  el=document.getElementById('note-tren');    if(el)el.innerHTML=n4;
 }
 
 // ── EVENTS ────────────────────────────────────────────
@@ -842,6 +1283,17 @@ document.addEventListener('click', e => {
   if (e.target.id==='pg-next') { tablePage++; renderTablePage(); return; }
   // Theme
   if (e.target.closest('#theme-btn')) { toggleTheme(); return; }
+});
+
+// ── MKTG INPUT FORMATTING ────────────────────────────
+['inp-adspend','inp-target'].forEach(function(id){
+  var el=document.getElementById(id);
+  if(!el)return;
+  el.addEventListener('focus',function(){this.value=this.value.replace(/\./g,'');});
+  el.addEventListener('blur',function(){
+    var n=+this.value.replace(/\./g,'').replace(/[^0-9]/g,'')||0;
+    this.value=n>0?n.toLocaleString('id-ID'):'';
+  });
 });
 
 // ── THEME ─────────────────────────────────────────────
