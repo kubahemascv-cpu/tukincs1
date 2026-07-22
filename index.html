@@ -154,6 +154,30 @@ body.dark .sec-note.info{background:#0A1628;border-color:#1D3A6E;color:#93C5FD}
 .finp2:focus{border-color:var(--or)}
 .btn-save2{height:34px;padding:0 16px;background:var(--or);color:#fff;font-family:var(--font);font-size:12px;font-weight:700;border:none;border-radius:8px;cursor:pointer;white-space:nowrap}
 .btn-save2:hover{background:var(--or-d)}
+/* FINAL DIAGNOSE */
+.diagnose-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+.dx-card{border-radius:12px;padding:13px 16px;border-left:4px solid;display:flex;gap:12px;align-items:flex-start;background:var(--card);box-shadow:var(--shd)}
+.dx-card.kritis{border-left-color:#DC2626;background:linear-gradient(135deg,#FEF2F2,var(--card))}
+.dx-card.perhatian{border-left-color:#D97706;background:linear-gradient(135deg,#FFFBEB,var(--card))}
+.dx-card.baik{border-left-color:#16A34A;background:linear-gradient(135deg,#F0FDF4,var(--card))}
+body.dark .dx-card.kritis{background:linear-gradient(135deg,#2A0808,var(--card))}
+body.dark .dx-card.perhatian{background:linear-gradient(135deg,#1A1200,var(--card))}
+body.dark .dx-card.baik{background:linear-gradient(135deg,#021A0A,var(--card))}
+.dx-ico{font-size:20px;flex-shrink:0;margin-top:1px}
+.dx-label{font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px}
+.dx-card.kritis .dx-label{color:#DC2626}
+.dx-card.perhatian .dx-label{color:#D97706}
+.dx-card.baik .dx-label{color:#16A34A}
+.dx-title{font-size:13px;font-weight:700;color:var(--txt);margin-bottom:4px;line-height:1.3}
+.dx-body{font-size:11.5px;color:var(--txt2);line-height:1.7}
+.dx-action{margin-top:7px;font-size:11px;font-weight:600;padding:5px 11px;border-radius:7px;display:inline-block}
+.dx-card.kritis .dx-action{background:#FEE2E2;color:#991B1B}
+.dx-card.perhatian .dx-action{background:#FEF3C7;color:#92400E}
+.dx-card.baik .dx-action{background:#D1FAE5;color:#065F46}
+body.dark .dx-card.kritis .dx-action{background:#450A0A;color:#FCA5A5}
+body.dark .dx-card.perhatian .dx-action{background:#431407;color:#FCD34D}
+body.dark .dx-card.baik .dx-action{background:#052E16;color:#6EE7B7}
+
 /* OMZET CHART BOX */
 .chart-box-full{background:var(--card);border-radius:var(--r);padding:16px 18px;box-shadow:var(--shd);border:1px solid var(--bdr);margin-bottom:4px}
 .chart-hd-full{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
@@ -278,6 +302,10 @@ body.dark .sec-note.info{background:#0A1628;border-color:#1D3A6E;color:#93C5FD}
         <div class="tbl-pager" id="tbl-pager"></div>
       </div>
     </div>
+
+    <!-- DIAGNOSA AKHIR -->
+    <span class="sec-label">🔍 Diagnosa & Prioritas Tindakan</span>
+    <div id="final-diagnose"><div style="text-align:center;padding:20px;color:var(--mut);font-size:12px">Memuat diagnosa...</div></div>
 
   </div><!-- /dashboard -->
 </div><!-- /wrap -->
@@ -828,6 +856,7 @@ function renderAll() {
   renderTable(filtered);
   renderJasaSection();
   renderSectionNotes(filtered, RAW_ROWS);
+  renderFinalDiagnose(filtered, RAW_ROWS);
 }
 
 // ── MAIN LOAD ─────────────────────────────────────────
@@ -970,15 +999,12 @@ function loadJasaData(){
     gvizRange(JASA_SHEET_ID, JASA_SHEET, JASA_RANGE_CAPAIAN)
   ]).then(function(tables){
     var t0=tables[0],t1=tables[1];
-    var r0=t0&&t0.rows?t0.rows.length:0;
-    var r1=t1&&t1.rows?t1.rows.length:0;
-    var v0=r0>0&&t0.rows[0].c&&t0.rows[0].c[0]?JSON.stringify(t0.rows[0].c[0].v):'(null)';
-    var v1=r1>0&&t1.rows[0].c&&t1.rows[0].c[0]?JSON.stringify(t1.rows[0].c[0].v):'(null)';
     JASA_DATA=parseJasaData(t0,t1);
     renderJasaSection();
     renderSectionNotes(applyFilters(RAW_ROWS),RAW_ROWS);
+    renderFinalDiagnose(applyFilters(RAW_ROWS),RAW_ROWS);
   }).catch(function(err){
-    if(dbg)dbg.innerHTML='<b style="color:red">❌ Fetch GAGAL: '+String(err)+'</b>';
+  }).catch(function(){
     JASA_DATA=[];
     renderJasaSection();
   });
@@ -1259,6 +1285,162 @@ function renderSectionNotes(filtered, all){
   el=document.getElementById('note-jasa');    if(el)el.innerHTML=n2;
   el=document.getElementById('note-mktg');    if(el)el.innerHTML=n3;
   el=document.getElementById('note-tren');    if(el)el.innerHTML=n4;
+}
+
+// ── FINAL DIAGNOSE ────────────────────────────────────
+function renderFinalDiagnose(filtered, all){
+  var el=document.getElementById('final-diagnose');
+  if(!el)return;
+
+  var ym=getSelectedMonth();
+  var inp=getMktgInput(ym);
+  var cur=JASA_DATA.find(function(d){return d.ym===ym;});
+  var target =inp.target_custom>0?inp.target_custom:(cur?cur.target:0);
+  var revenue=cur?cur.revenue:0;
+  var spend  =inp.adspend>0?inp.adspend:(cur?cur.actual_spend:0);
+  var ach    =pctN(revenue,target);
+  var roas   =spend>0&&revenue>0?+(revenue/spend).toFixed(1):0;
+
+  // CS data
+  var total  =filtered.length;
+  var cats   =countByCategory(filtered);
+  var top    =Object.entries(cats).sort(function(a,b){return b[1]-a[1];})[0];
+  var topPct =top&&total?Math.round(top[1]/total*100):0;
+  var trend  =monthlyTrend(all);
+  var tLen   =trend.data.length;
+  var growPct=tLen>=2&&trend.data[tLen-2]>0?Math.round((trend.data[tLen-1]-trend.data[tLen-2])/trend.data[tLen-2]*100):0;
+
+  // YTD omzet progress
+  var ytdTarget =JASA_DATA.reduce(function(s,d){return s+d.target;},0);
+  var ytdRevenue=JASA_DATA.reduce(function(s,d){return s+d.revenue;},0);
+  var ytdAch    =pctN(ytdRevenue,ytdTarget);
+  var bulanBerjalan=JASA_DATA.filter(function(d){return d.revenue>0;}).length;
+  var bulanBelum   =JASA_DATA.filter(function(d){return d.target>0&&d.revenue===0;}).length;
+
+  var items=[];
+
+  // ── 1. Omzet vs Target bulan ini ─────────────────────
+  if(target>0&&revenue===0){
+    items.push({level:'perhatian',ico:'⏳',label:'Target Belum Terekam',
+      title:'Realisasi bulan ini belum masuk di sheet',
+      body:'Target '+fmtSh(target)+' sudah ada tapi realisasi Finance belum diisi. Pastikan Finance mengupdate kolom Capaian di DATA SUMBER setelah proyek selesai.',
+      action:'Update sheet DATA SUMBER kolom C36-C47'});
+  } else if(ach>0&&ach<60){
+    items.push({level:'kritis',ico:'🔴',label:'Target Omzet Kritis',
+      title:'Pencapaian hanya '+ach+'% — GAP '+fmtSh(target-revenue),
+      body:'Realisasi '+fmtSh(revenue)+' jauh di bawah target '+fmtSh(target)+'. Perlu evaluasi pipeline proyek yang sedang berjalan dan akselerasi closing proyek bulan ini.',
+      action:'Review pipeline proyek aktif & percepat serah terima'});
+  } else if(ach>=60&&ach<85){
+    items.push({level:'perhatian',ico:'⚠️',label:'Target Belum Aman',
+      title:'Pencapaian '+ach+'% — masih ada ruang '+fmtSh(target-revenue),
+      body:'Progres cukup tapi belum aman. Identifikasi proyek mana yang bisa dipercepat penagihan atau serah terimanya sebelum akhir bulan.',
+      action:'Cek status proyek yang mendekati selesai'});
+  } else if(ach>=100){
+    items.push({level:'baik',ico:'🏆',label:'Target Terlampaui',
+      title:'Omzet bulan ini '+ach+'% — surplus '+fmtSh(revenue-target),
+      body:'Pencapaian luar biasa. Momentum ini perlu dipertahankan ke bulan depan — pastikan pipeline sudah terisi untuk bulan berikutnya.',
+      action:'Isi pipeline proyek bulan depan segera'});
+  }
+
+  // ── 2. YTD Progress ──────────────────────────────────
+  if(ytdTarget>0&&bulanBerjalan>0){
+    if(ytdAch<70&&bulanBelum>0){
+      items.push({level:'kritis',ico:'📉',label:'YTD Tertinggal',
+        title:'YTD baru '+ytdAch+'% dari target tahunan dengan '+bulanBelum+' bulan tersisa',
+        body:'Total realisasi tahun ini '+fmtSh(ytdRevenue)+' dari target '+fmtSh(ytdTarget)+'. Butuh rata-rata '+fmtSh(bulanBelum>0?Math.round((ytdTarget-ytdRevenue)/bulanBelum):0)+'/bulan di '+bulanBelum+' bulan tersisa untuk mencapai target tahunan.',
+        action:'Akselerasi akuisisi proyek baru Q3-Q4'});
+    } else if(ytdAch>=90){
+      items.push({level:'baik',ico:'📈',label:'YTD On Track',
+        title:'YTD '+ytdAch+'% — tahun ini berpotensi melampaui target',
+        body:'Total '+fmtSh(ytdRevenue)+' dari '+bulanBerjalan+' bulan berjalan. Rata-rata per bulan '+fmtSh(Math.round(ytdRevenue/bulanBerjalan))+'. Pertahankan konsistensi.',
+        action:'Jaga konversi proyek di pipeline'});
+    }
+  }
+
+  // ── 3. ROAS / Marketing ───────────────────────────────
+  if(spend>0){
+    if(roas<5){
+      items.push({level:'kritis',ico:'💸',label:'ROAS Di Bawah Standar',
+        title:'ROAS hanya '+roas+'x — iklan tidak efisien',
+        body:'Spend '+fmtRP(spend)+' menghasilkan revenue '+fmtSh(revenue)+'. Target minimal 5x, ideal 8x+. Audit campaign dengan CPL tertinggi dan matikan yang tidak konversi.',
+        action:'Audit & hentikan campaign CPL tinggi'});
+    } else if(roas>=8){
+      items.push({level:'baik',ico:'🚀',label:'ROAS Excellent',
+        title:'ROAS '+roas+'x — iklan sangat efisien',
+        body:'Marketing berjalan baik. Pertimbangkan scale budget ke campaign yang paling efisien untuk tingkatkan volume leads.',
+        action:'Scale budget ke campaign terbaik'});
+    } else {
+      items.push({level:'perhatian',ico:'📊',label:'ROAS Perlu Dioptimasi',
+        title:'ROAS '+roas+'x — di atas minimum tapi belum optimal',
+        body:'Masih ada potensi efisiensi. Review targeting audience dan refresh creative iklan untuk mendorong ROAS ke 8x+.',
+        action:'Refresh creative & optimasi audience targeting'});
+    }
+  } else {
+    items.push({level:'perhatian',ico:'💡',label:'Data Marketing Belum Lengkap',
+      title:'Biaya iklan belum diisi — ROAS tidak bisa dihitung',
+      body:'Isi biaya iklan di section Biaya Marketing & ROAS untuk mendapatkan analisis efisiensi marketing Divisi Jasa secara akurat.',
+      action:'Isi biaya iklan di section Marketing'});
+  }
+
+  // ── 4. CS Survey Trend ────────────────────────────────
+  if(tLen>=2){
+    if(growPct<-15){
+      items.push({level:'kritis',ico:'📡',label:'Leads CS Menurun Drastis',
+        title:'Volume survey turun '+Math.abs(growPct)+'% dari bulan lalu',
+        body:'Penurunan signifikan menunjukkan masalah di acquisition — iklan mungkin tidak berjalan, budget habis, atau audience sudah saturasi.',
+        action:'Cek status campaign iklan & budget'});
+    } else if(growPct>20){
+      items.push({level:'baik',ico:'📬',label:'Leads CS Meningkat',
+        title:'Volume survey naik +'+growPct+'% dari bulan lalu',
+        body:'Acquisition berjalan baik. Pastikan kapasitas CS cukup untuk menangani volume leads yang meningkat dan response time tetap di bawah 1 jam.',
+        action:'Monitor response time CS agar tidak lambat'});
+    }
+  }
+
+  // ── 5. Distribusi kategori ───────────────────────────
+  if(topPct>=65&&total>=10){
+    items.push({level:'perhatian',ico:'⚖️',label:'Ketergantungan Kategori Tinggi',
+      title:'"'+top[0]+'" mendominasi '+topPct+'% dari seluruh survey',
+      body:'Bisnis terlalu bergantung pada satu kategori. Jika kategori ini stagnan, omzet keseluruhan langsung terdampak. Perlu diversifikasi sumber leads ke kategori lain.',
+      action:'Aktifkan akuisisi di kategori selain '+top[0]});
+  }
+
+  // ── 6. Jika semua baik ───────────────────────────────
+  var kritis=items.filter(function(x){return x.level==='kritis';}).length;
+  var perhatian=items.filter(function(x){return x.level==='perhatian';}).length;
+  var baik=items.filter(function(x){return x.level==='baik';}).length;
+
+  if(!items.length){
+    items.push({level:'baik',ico:'✅',label:'Semua Indikator Normal',
+      title:'Tidak ada hal kritis yang terdeteksi saat ini',
+      body:'Semua metrik dalam kondisi baik. Lengkapi data biaya iklan dan pastikan sheet selalu terupdate untuk diagnosa yang lebih akurat.',
+      action:'Jaga konsistensi update data harian'});
+  }
+
+  // Header ringkasan
+  var headerColor=kritis>0?'#DC2626':perhatian>0?'#D97706':'#16A34A';
+  var headerText=kritis>0?kritis+' hal kritis perlu ditangani segera':perhatian>0?perhatian+' hal perlu perhatian':'Semua indikator baik';
+  var headerHtml='<div style="background:var(--card);border-radius:12px;padding:12px 16px;margin-bottom:12px;border:1.5px solid '
+    +headerColor+';display:flex;align-items:center;gap:10px">'
+    +'<div style="width:10px;height:10px;border-radius:50%;background:'+headerColor+';flex-shrink:0"></div>'
+    +'<div><div style="font-size:12px;font-weight:800;color:'+headerColor+'">'+headerText+'</div>'
+    +'<div style="font-size:10.5px;color:var(--mut);margin-top:1px">'
+    +kritis+' kritis · '+perhatian+' perhatian · '+baik+' baik'
+    +(total?' · '+total+' survey CS':'')
+    +'</div></div></div>';
+
+  el.innerHTML=headerHtml+'<div class="diagnose-wrap">'
+    +items.map(function(it){
+      return'<div class="dx-card '+it.level+'">'
+        +'<div class="dx-ico">'+it.ico+'</div>'
+        +'<div style="flex:1">'
+        +'<div class="dx-label">'+it.label+'</div>'
+        +'<div class="dx-title">'+it.title+'</div>'
+        +'<div class="dx-body">'+it.body+'</div>'
+        +'<span class="dx-action">→ '+it.action+'</span>'
+        +'</div></div>';
+    }).join('')
+    +'</div>';
 }
 
 // ── EVENTS ────────────────────────────────────────────
