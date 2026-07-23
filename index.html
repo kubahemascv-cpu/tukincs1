@@ -14,6 +14,66 @@
 <link rel="manifest" id="pwa-manifest">
 <link rel="apple-touch-icon" id="pwa-icon-link">
 <link rel="icon" id="pwa-icon-32" type="image/png" sizes="32x32">
+<script>
+// ── PWA ASSETS — jalan di <head> agar Chrome baca manifest SEBELUM render body ──
+(function(){
+  try{
+    function drawIcon(size){
+      var cv=document.createElement('canvas');
+      cv.width=size;cv.height=size;
+      var ctx=cv.getContext('2d');
+      var s=size,r=Math.round(size*0.205);
+      // Background gradient oranye
+      var g=ctx.createLinearGradient(0,0,s,s);
+      g.addColorStop(0,'#FF7040');g.addColorStop(1,'#C43E08');
+      ctx.beginPath();ctx.moveTo(r,0);
+      ctx.arcTo(s,0,s,r,r);ctx.arcTo(s,s,s-r,s,r);
+      ctx.arcTo(0,s,0,s-r,r);ctx.arcTo(0,0,r,0,r);
+      ctx.closePath();ctx.fillStyle=g;ctx.fill();
+      // Depth overlay
+      var ig=ctx.createRadialGradient(s*.39,s*.31,s*.04,s/2,s/2,s*.7);
+      ig.addColorStop(0,'rgba(255,255,255,0.08)');ig.addColorStop(1,'rgba(0,0,0,0.12)');
+      ctx.fillStyle=ig;ctx.fill();
+      // "CS" besar
+      ctx.fillStyle='#FFFFFF';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+      ctx.font='900 '+Math.round(s*0.38)+'px Arial';
+      ctx.fillText('CS',s/2,Math.round(s*0.523));
+      // Garis
+      ctx.fillStyle='rgba(255,255,255,0.28)';
+      ctx.fillRect(s*.137,s*.576,s*.727,Math.max(2,Math.round(s*.006)));
+      // "TUKIN"
+      ctx.fillStyle='rgba(255,255,255,0.92)';
+      ctx.font='700 '+Math.round(s*0.141)+'px Arial';
+      var ltrs=['T','U','K','I','N'],gap=Math.round(s*0.027),tw=0;
+      var ws=ltrs.map(function(l){var w=ctx.measureText(l).width;tw+=w;return w;});
+      tw+=gap*(ltrs.length-1);var cx=s/2-tw/2;ctx.textAlign='left';
+      ltrs.forEach(function(l,i){ctx.fillText(l,cx,Math.round(s*0.762));cx+=ws[i]+gap;});
+      return cv.toDataURL('image/png');
+    }
+    var png512=drawIcon(512);
+    var png192=drawIcon(192);
+    // Apple Touch Icon
+    var il=document.getElementById('pwa-icon-link');if(il)il.href=png512;
+    // Favicon
+    var f32=document.getElementById('pwa-icon-32');if(f32)f32.href=png512;
+    // Manifest inline sebagai data URI — dibaca Chrome saat parsing HTML
+    var manifest={
+      name:'CS TUKIN \u2014 Kumasindo',short_name:'CS TUKIN',
+      description:'Dashboard CS Survey Divisi Jasa Kumasindo',
+      start_url:'./',scope:'./',display:'standalone',
+      orientation:'any',background_color:'#FAF8F6',theme_color:'#F05A1A',lang:'id',
+      icons:[
+        {src:png192,sizes:'192x192',type:'image/png',purpose:'any'},
+        {src:png192,sizes:'192x192',type:'image/png',purpose:'maskable'},
+        {src:png512,sizes:'512x512',type:'image/png',purpose:'any'},
+        {src:png512,sizes:'512x512',type:'image/png',purpose:'maskable'}
+      ]
+    };
+    var ml=document.getElementById('pwa-manifest');
+    if(ml)ml.href='data:application/manifest+json;base64,'+btoa(unescape(encodeURIComponent(JSON.stringify(manifest))));
+  }catch(e){}
+})();
+</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -1497,112 +1557,31 @@ function updateThemeIco(dark) {
     : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.79"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
 }
 
-// ── PWA ICON & MANIFEST — Data URI (persistent, tidak hilang saat update HP) ────
-(function(){
-  var cv=document.createElement('canvas');
-  cv.width=512;cv.height=512;
-  var ctx=cv.getContext('2d');
-
-  // Background gradient oranye Kumasindo
-  var g=ctx.createLinearGradient(0,0,512,512);
-  g.addColorStop(0,'#FF7040');g.addColorStop(1,'#C43E08');
-  var r=105;
-  ctx.beginPath();ctx.moveTo(r,0);
-  ctx.arcTo(512,0,512,r,r);ctx.arcTo(512,512,512-r,512,r);
-  ctx.arcTo(0,512,0,512-r,r);ctx.arcTo(0,0,r,0,r);
-  ctx.closePath();ctx.fillStyle=g;ctx.fill();
-
-  // Depth overlay
-  var ig=ctx.createRadialGradient(200,160,20,256,256,360);
-  ig.addColorStop(0,'rgba(255,255,255,0.08)');ig.addColorStop(1,'rgba(0,0,0,0.12)');
-  ctx.fillStyle=ig;ctx.fill();
-
-  // "CS" besar
-  ctx.fillStyle='#FFFFFF';ctx.textAlign='center';ctx.textBaseline='alphabetic';
-  ctx.font='900 195px Arial';ctx.fillText('CS',256,268);
-
-  // Garis
-  ctx.fillStyle='rgba(255,255,255,0.28)';ctx.fillRect(70,295,372,3);
-
-  // "TUKIN" spasi manual
-  ctx.fillStyle='rgba(255,255,255,0.92)';ctx.font='700 72px Arial';
-  var ltrs=['T','U','K','I','N'],gap=14,tw=0;
-  var ws=ltrs.map(function(l){var w=ctx.measureText(l).width;tw+=w;return w;});
-  tw+=gap*(ltrs.length-1);var cx=256-tw/2;ctx.textAlign='left';
-  ltrs.forEach(function(l,i){ctx.fillText(l,cx,390);cx+=ws[i]+gap;});
-
-  // Ambil PNG sebagai data URI
-  var iconB64=cv.toDataURL('image/png');
-  var iconData=iconB64.split(',')[1]; // hanya base64 bagiannya
-
-  // Apple Touch Icon
-  var il=document.getElementById('pwa-icon-link');
-  if(il)il.href=iconB64;
-
-  // Favicon 32x32
-  var f32=document.getElementById('pwa-icon-32');
-  if(f32)f32.href=iconB64;
-
-  // ── MANIFEST sebagai Data URI base64 (BUKAN blob URL — ini yang bikin persistent) ──
-  try{
-    var manifest={
-      name:'CS TUKIN \u2014 Kumasindo',
-      short_name:'CS TUKIN',
-      description:'Dashboard CS Survey Divisi Jasa Kumasindo',
-      start_url:'./',
-      scope:'./',
-      display:'standalone',
-      orientation:'any',
-      background_color:'#FAF8F6',
-      theme_color:'#F05A1A',
-      lang:'id',
-      icons:[
-        {src:'data:image/png;base64,'+iconData,sizes:'192x192',type:'image/png',purpose:'any'},
-        {src:'data:image/png;base64,'+iconData,sizes:'192x192',type:'image/png',purpose:'maskable'},
-        {src:'data:image/png;base64,'+iconData,sizes:'512x512',type:'image/png',purpose:'any'},
-        {src:'data:image/png;base64,'+iconData,sizes:'512x512',type:'image/png',purpose:'maskable'},
-      ]
-    };
-    // btoa() encode manifest JSON ke base64 → embed sebagai data URI
-    var mStr=JSON.stringify(manifest);
-    var mB64=btoa(unescape(encodeURIComponent(mStr)));
-    var ml=document.getElementById('pwa-manifest');
-    if(ml)ml.href='data:application/manifest+json;base64,'+mB64;
-  }catch(e){}
-
-  // ── SERVICE WORKER — diperlukan Chrome untuk install sebagai app (bukan shortcut) ──
-  if('serviceWorker' in navigator){
-    // Inline Service Worker via Blob URL — tidak butuh file sw.js terpisah
-    // Inilah yang bikin browser kenali ini sebagai app beneran, bukan shortcut
-    window.addEventListener('load', function(){
-      var swCode = [
-        "const CACHE='cs-tukin-v2';",
-        "self.addEventListener('install',e=>{e.waitUntil(self.skipWaiting());});",
-        "self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim());});",
-        "self.addEventListener('fetch',e=>{",
-        "  if(e.request.url.includes('docs.google.com')||e.request.url.includes('googleapis.com')){",
-        "    e.respondWith(fetch(e.request).catch(function(){return caches.match(e.request);}));",
-        "    return;",
-        "  }",
-        "  e.respondWith(",
-        "    caches.open(CACHE).then(function(c){",
-        "      return c.match(e.request).then(function(r){",
-        "        return r||(fetch(e.request).then(function(res){",
-        "          c.put(e.request,res.clone());return res;",
-        "        }));",
-        "      });",
-        "    })",
-        "  );",
-        "});"
-      ].join('\n');
-      var blob = new Blob([swCode], {type:'application/javascript'});
-      var url  = URL.createObjectURL(blob);
-      navigator.serviceWorker.register(url)
-        .then(function(r){console.log('[SW] registered, scope:',r.scope);})
-        .catch(function(e){console.warn('[SW] failed:',e);});
-    });
-  }
-})();
+// ── SERVICE WORKER via Blob URL — tidak butuh sw.js terpisah ─────────────
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    var swCode=[
+      "const CACHE='cs-tukin-v3';",
+      "self.addEventListener('install',e=>{e.waitUntil(self.skipWaiting());});",
+      "self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim());});",
+      "self.addEventListener('fetch',e=>{",
+      "  if(/docs\\.google\\.com|googleapis\\.com/.test(e.request.url)){",
+      "    e.respondWith(fetch(e.request).catch(function(){return caches.match(e.request);}));",
+      "    return;",
+      "  }",
+      "  e.respondWith(caches.open(CACHE).then(function(c){",
+      "    return c.match(e.request).then(function(r){",
+      "      return r||(fetch(e.request).then(function(res){c.put(e.request,res.clone());return res;}));",
+      "    });",
+      "  }));",
+      "});"
+    ].join('\n');
+    var blob=new Blob([swCode],{type:'application/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(blob))
+      .then(function(r){console.log('[SW] OK scope:',r.scope);})
+      .catch(function(e){console.warn('[SW] failed:',e);});
+  });
+}
 
 // ── INIT ──────────────────────────────────────────────
 const savedTheme = localStorage.getItem('ku_dash_theme');
