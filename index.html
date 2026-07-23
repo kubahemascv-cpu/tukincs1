@@ -1572,9 +1572,34 @@ function updateThemeIco(dark) {
 
   // ── SERVICE WORKER — diperlukan Chrome untuk install sebagai app (bukan shortcut) ──
   if('serviceWorker' in navigator){
-    // SW harus di-register dari file terpisah untuk scope yang benar
-    navigator.serviceWorker.register('./sw.js').catch(function(){
-      // SW tidak tersedia — app tetap bisa diinstall via manifest
+    // Inline Service Worker via Blob URL — tidak butuh file sw.js terpisah
+    // Inilah yang bikin browser kenali ini sebagai app beneran, bukan shortcut
+    window.addEventListener('load', function(){
+      var swCode = [
+        "const CACHE='cs-tukin-v2';",
+        "self.addEventListener('install',e=>{e.waitUntil(self.skipWaiting());});",
+        "self.addEventListener('activate',e=>{e.waitUntil(self.clients.claim());});",
+        "self.addEventListener('fetch',e=>{",
+        "  if(e.request.url.includes('docs.google.com')||e.request.url.includes('googleapis.com')){",
+        "    e.respondWith(fetch(e.request).catch(function(){return caches.match(e.request);}));",
+        "    return;",
+        "  }",
+        "  e.respondWith(",
+        "    caches.open(CACHE).then(function(c){",
+        "      return c.match(e.request).then(function(r){",
+        "        return r||(fetch(e.request).then(function(res){",
+        "          c.put(e.request,res.clone());return res;",
+        "        }));",
+        "      });",
+        "    })",
+        "  );",
+        "});"
+      ].join('\n');
+      var blob = new Blob([swCode], {type:'application/javascript'});
+      var url  = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(url)
+        .then(function(r){console.log('[SW] registered, scope:',r.scope);})
+        .catch(function(e){console.warn('[SW] failed:',e);});
     });
   }
 })();
