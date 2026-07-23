@@ -5,11 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>CS TUKIN — Kumasindo</title>
 <meta name="theme-color" id="tc" content="#F05A1A">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="CS TUKIN">
-<link rel="apple-touch-icon" id="pwa-icon-link">
+<meta name="application-name" content="CS TUKIN">
+<meta name="description" content="Dashboard CS Survey Divisi Jasa Kumasindo">
 <link rel="manifest" id="pwa-manifest">
+<link rel="apple-touch-icon" id="pwa-icon-link">
+<link rel="icon" id="pwa-icon-32" type="image/png" sizes="32x32">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -1493,90 +1497,86 @@ function updateThemeIco(dark) {
     : '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.79"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
 }
 
-// ── PWA ICON & MANIFEST (Canvas PNG — compatible di iOS & Android) ────
-(function() {
-  var canvas = document.createElement('canvas');
-  canvas.width = 512; canvas.height = 512;
-  var ctx = canvas.getContext('2d');
+// ── PWA ICON & MANIFEST — Data URI (persistent, tidak hilang saat update HP) ────
+(function(){
+  var cv=document.createElement('canvas');
+  cv.width=512;cv.height=512;
+  var ctx=cv.getContext('2d');
 
   // Background gradient oranye Kumasindo
-  var grad = ctx.createLinearGradient(0, 0, 512, 512);
-  grad.addColorStop(0, '#FF7040');
-  grad.addColorStop(1, '#C43E08');
+  var g=ctx.createLinearGradient(0,0,512,512);
+  g.addColorStop(0,'#FF7040');g.addColorStop(1,'#C43E08');
+  var r=105;
+  ctx.beginPath();ctx.moveTo(r,0);
+  ctx.arcTo(512,0,512,r,r);ctx.arcTo(512,512,512-r,512,r);
+  ctx.arcTo(0,512,0,512-r,r);ctx.arcTo(0,0,r,0,r);
+  ctx.closePath();ctx.fillStyle=g;ctx.fill();
 
-  // Rounded rectangle (seperti ikon app native)
-  var rad = 105;
-  ctx.beginPath();
-  ctx.moveTo(rad, 0);
-  ctx.arcTo(512,   0, 512, rad,     rad);
-  ctx.arcTo(512, 512, 512-rad, 512, rad);
-  ctx.arcTo(0,   512, 0, 512-rad,   rad);
-  ctx.arcTo(0,     0, rad, 0,       rad);
-  ctx.closePath();
-  ctx.fillStyle = grad;
-  ctx.fill();
+  // Depth overlay
+  var ig=ctx.createRadialGradient(200,160,20,256,256,360);
+  ig.addColorStop(0,'rgba(255,255,255,0.08)');ig.addColorStop(1,'rgba(0,0,0,0.12)');
+  ctx.fillStyle=ig;ctx.fill();
 
-  // Subtle inner shadow / depth
-  var inner = ctx.createRadialGradient(200, 160, 20, 256, 256, 360);
-  inner.addColorStop(0, 'rgba(255,255,255,0.08)');
-  inner.addColorStop(1, 'rgba(0,0,0,0.12)');
-  ctx.fillStyle = inner;
-  ctx.fill();
+  // "CS" besar
+  ctx.fillStyle='#FFFFFF';ctx.textAlign='center';ctx.textBaseline='alphabetic';
+  ctx.font='900 195px Arial';ctx.fillText('CS',256,268);
 
-  // "CS" — teks besar putih
-  ctx.fillStyle = '#FFFFFF';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'alphabetic';
-  ctx.font = '900 195px Arial';
-  ctx.fillText('CS', 256, 268);
+  // Garis
+  ctx.fillStyle='rgba(255,255,255,0.28)';ctx.fillRect(70,295,372,3);
 
-  // Garis pemisah
-  ctx.fillStyle = 'rgba(255,255,255,0.28)';
-  ctx.fillRect(70, 295, 372, 3);
+  // "TUKIN" spasi manual
+  ctx.fillStyle='rgba(255,255,255,0.92)';ctx.font='700 72px Arial';
+  var ltrs=['T','U','K','I','N'],gap=14,tw=0;
+  var ws=ltrs.map(function(l){var w=ctx.measureText(l).width;tw+=w;return w;});
+  tw+=gap*(ltrs.length-1);var cx=256-tw/2;ctx.textAlign='left';
+  ltrs.forEach(function(l,i){ctx.fillText(l,cx,390);cx+=ws[i]+gap;});
 
-  // "TUKIN" — spasi manual supaya merata
-  ctx.fillStyle = 'rgba(255,255,255,0.92)';
-  ctx.font = '700 72px Arial';
-  var letters = ['T','U','K','I','N'];
-  var gap = 14;
-  var totalW = 0;
-  var widths = letters.map(function(l) {
-    var w = ctx.measureText(l).width; totalW += w; return w;
-  });
-  totalW += gap * (letters.length - 1);
-  var cx = 256 - totalW / 2;
-  ctx.textAlign = 'left';
-  letters.forEach(function(l, i) {
-    ctx.fillText(l, cx, 390);
-    cx += widths[i] + gap;
-  });
+  // Ambil PNG sebagai data URI
+  var iconB64=cv.toDataURL('image/png');
+  var iconData=iconB64.split(',')[1]; // hanya base64 bagiannya
 
-  // Ambil sebagai PNG (kompatibel semua browser)
-  var iconPNG = canvas.toDataURL('image/png');
+  // Apple Touch Icon
+  var il=document.getElementById('pwa-icon-link');
+  if(il)il.href=iconB64;
 
-  // Apple Touch Icon (iOS Safari pakai ini untuk thumbnail)
-  var il = document.getElementById('pwa-icon-link');
-  if (il) { il.rel = 'apple-touch-icon'; il.href = iconPNG; }
+  // Favicon 32x32
+  var f32=document.getElementById('pwa-icon-32');
+  if(f32)f32.href=iconB64;
 
-  // Web App Manifest (Android Chrome)
-  try {
-    var manifest = {
-      name: 'CS TUKIN \u2014 Kumasindo',
-      short_name: 'CS TUKIN',
-      description: 'Dashboard Tunjangan Kinerja CS Kumasindo',
-      start_url: './',
-      display: 'standalone',
-      orientation: 'portrait',
-      background_color: '#FAF8F6',
-      theme_color: '#F05A1A',
-      icons: [
-        { src: iconPNG, sizes: '192x192', type: 'image/png' },
-        { src: iconPNG, sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
+  // ── MANIFEST sebagai Data URI base64 (BUKAN blob URL — ini yang bikin persistent) ──
+  try{
+    var manifest={
+      name:'CS TUKIN \u2014 Kumasindo',
+      short_name:'CS TUKIN',
+      description:'Dashboard CS Survey Divisi Jasa Kumasindo',
+      start_url:'./',
+      scope:'./',
+      display:'standalone',
+      orientation:'any',
+      background_color:'#FAF8F6',
+      theme_color:'#F05A1A',
+      lang:'id',
+      icons:[
+        {src:'data:image/png;base64,'+iconData,sizes:'192x192',type:'image/png',purpose:'any'},
+        {src:'data:image/png;base64,'+iconData,sizes:'192x192',type:'image/png',purpose:'maskable'},
+        {src:'data:image/png;base64,'+iconData,sizes:'512x512',type:'image/png',purpose:'any'},
+        {src:'data:image/png;base64,'+iconData,sizes:'512x512',type:'image/png',purpose:'maskable'},
       ]
     };
-    var mBlob = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-    document.getElementById('pwa-manifest').href = URL.createObjectURL(mBlob);
-  } catch(e) {}
+    // btoa() encode manifest JSON ke base64 → embed sebagai data URI
+    var mStr=JSON.stringify(manifest);
+    var mB64=btoa(unescape(encodeURIComponent(mStr)));
+    var ml=document.getElementById('pwa-manifest');
+    if(ml)ml.href='data:application/manifest+json;base64,'+mB64;
+  }catch(e){}
+
+  // ── SERVICE WORKER — diperlukan Chrome untuk install sebagai app (bukan shortcut) ──
+  if('serviceWorker' in navigator){
+    // SW harus di-register dari file terpisah untuk scope yang benar
+    navigator.serviceWorker.register('./sw.js').catch(function(){
+      // SW tidak tersedia — app tetap bisa diinstall via manifest
+    });
+  }
 })();
 
 // ── INIT ──────────────────────────────────────────────
